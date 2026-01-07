@@ -4,7 +4,6 @@ Handles user registration, login, and token management.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.database import get_db
 from app.models.user import UserCreate, UserResponse, LoginRequest, TokenResponse
@@ -20,11 +19,13 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
+DB_NAME = "volunteer_signup"
+
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register(
     user_data: UserCreate,
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: DB_NAME = Depends(get_db)
 ):
     """
     Register a new user.
@@ -85,7 +86,7 @@ async def register(
 @router.post("/login", response_model=TokenResponse)
 async def login(
     credentials: LoginRequest,
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: DB_NAME =Depends(get_db)
 ):
     """
     Authenticate user and return JWT tokens.

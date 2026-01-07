@@ -3,7 +3,7 @@ MongoDB database connection and initialization.
 Uses Motor for async MongoDB operations with FastAPI.
 """
 
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from pymongo import AsyncMongoClient
 from typing import Optional
 import logging
 
@@ -18,8 +18,8 @@ class MongoDB:
     Handles connection lifecycle and provides database instance.
     """
     
-    client: Optional[AsyncIOMotorClient] = None
-    database: Optional[AsyncIOMotorDatabase] = None
+    client: Optional[AsyncMongoClient] = None
+    database: "volunteer_signup"
     
     @classmethod
     async def connect(cls):
@@ -28,7 +28,7 @@ class MongoDB:
         Called during application startup.
         """
         try:
-            cls.client = AsyncIOMotorClient(settings.MONGODB_URL)
+            cls.client = AsyncMongoClient(settings.MONGODB_URL)
             cls.database = cls.client[settings.DATABASE_NAME]
             
             # Test connection
@@ -62,7 +62,7 @@ class MongoDB:
             - Compound indexes optimize common queries
             - Geospatial indexes enable location-based search
         """
-        if not cls.database:
+        if cls.database is None:
             return
         
         # Users collection indexes
@@ -125,7 +125,7 @@ class MongoDB:
         logger.info("Database indexes created successfully")
     
     @classmethod
-    def get_database(cls) -> AsyncIOMotorDatabase:
+    def get_database(cls):
         """
         Get database instance.
         
@@ -140,7 +140,7 @@ class MongoDB:
         return cls.database
 
 
-async def get_db() -> AsyncIOMotorDatabase:
+async def get_db():
     """
     Dependency function to get database instance in route handlers.
     
@@ -152,4 +152,4 @@ async def get_db() -> AsyncIOMotorDatabase:
     Returns:
         AsyncIOMotorDatabase: Database instance for dependency injection
     """
-    return MongoDB.get_database()
+    return MongoDB.get_dataebase()

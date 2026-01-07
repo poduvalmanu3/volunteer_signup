@@ -6,7 +6,6 @@ Implements role-based access control (RBAC) with JWT tokens.
 from typing import Optional
 from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
-from motor.motor_asyncio import AsyncIOMotorDatabase
 import uuid
 import logging
 
@@ -20,10 +19,11 @@ logger = logging.getLogger(__name__)
 # tokenUrl points to the login endpoint
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
+DB_NAME = "volunteer_signup"
 
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: DB_NAME = Depends(get_db)
 ) -> UserInDB:
     """
     Dependency to get currently authenticated user from JWT token.

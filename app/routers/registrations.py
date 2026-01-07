@@ -4,7 +4,6 @@ Volunteer registration for cleanup drives.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from motor.motor_asyncio import AsyncIOMotorDatabase
 from datetime import datetime, timedelta
 
 from app.database import get_db
@@ -24,12 +23,13 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/registrations", tags=["Registrations"])
 
+DB_NAME = "volunteer_signup"
 
 @router.post("/", response_model=RegistrationResponse, status_code=status.HTTP_201_CREATED)
 async def register_for_drive(
     registration_data: RegistrationCreate,
     current_user: UserInDB = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: DB_NAME = Depends(get_db)
 ):
     """
     Register current user for a cleanup drive.
@@ -133,7 +133,7 @@ async def register_for_drive(
 @router.get("/my", response_model=MyRegistrationsResponse)
 async def get_my_registrations(
     current_user: UserInDB = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: DB_NAME = Depends(get_db)
 ):
     """
     Get all registrations for current user.
@@ -163,7 +163,7 @@ async def get_my_registrations(
 async def cancel_registration(
     registration_id: str,
     current_user: UserInDB = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: DB_NAME = Depends(get_db)
 ):
     """
     Cancel a registration.

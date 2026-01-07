@@ -5,7 +5,6 @@ Handles volunteer registration and attendance tracking.
 
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson import ObjectId
 
 from app.models.registration import (
@@ -16,12 +15,14 @@ from app.models.registration import (
 from app.core.security import sanitize_mongo_query
 
 
+
 class RegistrationRepository:
     """
     Repository for registration and attendance operations.
     """
+    DB_NAME = "volunteer_signup"
     
-    def __init__(self, db: AsyncIOMotorDatabase):
+    def __init__(self, db: DB_NAME):
         self.db = db
         self.registrations = db.registrations
         self.attendance = db.attendance

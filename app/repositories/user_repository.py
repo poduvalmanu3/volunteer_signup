@@ -5,7 +5,6 @@ Implements data access layer with NoSQL injection prevention.
 
 from typing import Optional
 from datetime import datetime
-from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson import ObjectId
 
 from app.models.user import UserCreate, UserInDB, UserUpdate
@@ -17,8 +16,10 @@ class UserRepository:
     Repository for user-related database operations.
     Follows repository pattern to separate data access from business logic.
     """
+
+    DB_NAME = "volunteer_signup"
     
-    def __init__(self, db: AsyncIOMotorDatabase):
+    def __init__(self, db: DB_NAME):
         """
         Initialize repository with database instance.
         

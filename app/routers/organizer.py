@@ -4,7 +4,6 @@ Endpoints for drive organizers to manage their drives and participants.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.database import get_db
 from app.models.user import UserInDB
@@ -25,13 +24,14 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/organizer", tags=["Organizer"])
 
+DB_NAME="volunteer_signup"
 
 @router.get("/drives", response_model=DriveListResponse)
 async def get_my_drives(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Items per page"),
     current_user: UserInDB = Depends(require_organizer),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: DB_NAME = Depends(get_db)
 ):
     """
     Get all drives created by current organizer.
@@ -80,7 +80,7 @@ async def get_drive_participants(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Items per page"),
     current_user: UserInDB = Depends(require_organizer),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: DB_NAME = Depends(get_db)
 ):
     """
     Get participants for a drive (PRIVACY-FIRST).
@@ -175,7 +175,7 @@ async def mark_attendance(
     drive_id: str,
     attendance_data: AttendanceCreate,
     current_user: UserInDB = Depends(require_organizer),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: DB_NAME = Depends(get_db)
 ):
     """
     Mark attendance for a volunteer.

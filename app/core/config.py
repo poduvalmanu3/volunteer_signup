@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     
     # MongoDB Configuration
     MONGODB_URL: str = Field(
-        default="mongodb://localhost:27017",
+        default="mongodb://127.0.0.1:27017",
         description="MongoDB connection string"
     )
     DATABASE_NAME: str = Field(

@@ -4,7 +4,6 @@ User profile management endpoints.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.database import get_db
 from app.models.user import UserInDB, UserResponse, UserUpdate
@@ -16,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
+DB_NAME = "volunteer_signup"
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user_profile(
@@ -41,7 +41,7 @@ async def get_current_user_profile(
 async def update_current_user_profile(
     update_data: UserUpdate,
     current_user: UserInDB = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: DB_NAME = Depends(get_db)
 ):
     """
     Update current user's profile.

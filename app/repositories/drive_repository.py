@@ -5,20 +5,20 @@ Supports geospatial queries and complex filtering.
 
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
-from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson import ObjectId
 
 from app.models.drive import DriveCreate, DriveInDB, DriveUpdate, DriveSearchFilters
 from app.core.security import sanitize_mongo_query
 from app.core.config import settings
 
+DB_NAME = "volunteer_signup"
 
 class DriveRepository:
     """
     Repository for drive-related database operations.
     """
     
-    def __init__(self, db: AsyncIOMotorDatabase):
+    def __init__(self, db: DB_NAME):
         self.db = db
         self.collection = db.drives
     

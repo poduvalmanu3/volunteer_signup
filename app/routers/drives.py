@@ -4,7 +4,6 @@ Cleanup drive management endpoints.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import Optional
 from datetime import datetime
 
@@ -26,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/drives", tags=["Drives"])
 
+DB_NAME = "volunteer_signup"
 
 @router.get("/", response_model=DriveListResponse)
 async def search_drives(
@@ -36,7 +36,7 @@ async def search_drives(
     status: Optional[str] = Query("published", description="Filter by status"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Items per page"),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: DB_NAME = Depends(get_db)
 ):
     """
     Search and filter cleanup drives (PUBLIC endpoint).
@@ -93,7 +93,7 @@ async def search_drives(
 async def create_drive(
     drive_data: DriveCreate,
     current_user: UserInDB = Depends(require_organizer),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: DB_NAME = Depends(get_db)
 ):
     """
     Create a new cleanup drive.
@@ -136,7 +136,7 @@ async def create_drive(
 @router.get("/{drive_id}", response_model=DriveResponse)
 async def get_drive(
     drive_id: str,
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: DB_NAME = Depends(get_db)
 ):
     """
     Get drive details by ID (PUBLIC endpoint).
@@ -167,7 +167,7 @@ async def update_drive(
     drive_id: str,
     update_data: DriveUpdate,
     current_user: UserInDB = Depends(require_organizer),
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    db: DB_NAME = Depends(get_db)
 ):
     """
     Update drive details.

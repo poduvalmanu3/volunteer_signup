@@ -6,7 +6,7 @@ Enforces privacy-first design with age bands instead of DOB.
 from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
-import phonenumbers # remove the usage of this dependency, use regex to validate indian phone numbers
+
 
 from app.core.config import settings
 
@@ -45,26 +45,25 @@ class UserBase(BaseModel):
         Validate Indian phone number format.
         Accepts: +91XXXXXXXXXX or 10-digit number
         """
-        try:
-            # Remove spaces and dashes
-            clean_phone = v.replace(" ", "").replace("-", "")
-            
-            # Add +91 if not present
-            if not clean_phone.startswith("+"):
-                clean_phone = f"+91{clean_phone}"
-            
-            # Parse and validate
-            parsed = phonenumbers.parse(clean_phone, "IN")
-            if not phonenumbers.is_valid_number(parsed):
-                raise ValueError("Invalid Indian phone number")
-            
-            # Return in standard format
-            return phonenumbers.format_number(
-                parsed,
-                phonenumbers.PhoneNumberFormat.E164
-            )
-        except Exception:
-            raise ValueError("Invalid phone number format. Use +91XXXXXXXXXX or 10 digits")
+        # Remove spaces and dashes
+        clean_phone = v.replace(" ", "").replace("-", "")
+        
+        # Add +91 if not present for regex check (or check 10 digits directly)
+        # Indian numbers match: (+91)?[6-9][0-9]{9}
+        import re
+        pattern = r"^(?:\+91)?[6-9]\d{9}$"
+        
+        if not re.match(pattern, clean_phone):
+             raise ValueError("Invalid Indian phone number. Must start with 6-9 and be 10 digits.")
+
+        # Normalize to +91XXXXXXXXXX
+        if len(clean_phone) == 10:
+             return f"+91{clean_phone}"
+        if clean_phone.startswith("+91") and len(clean_phone) == 13:
+             return clean_phone
+             
+        # Fallback for any other valid cases caught by regex but not normalized above (unlikely with this regex)
+        raise ValueError("Invalid phone number format")
 
 
 class UserCreate(UserBase):
