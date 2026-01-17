@@ -71,6 +71,18 @@ Verify the application is running:
 http://127.0.0.1:8000/health
 ```
 
+## Local PostgreSQL (Docker)
+
+Start PostgreSQL:
+```bash
+docker compose up -d
+```
+PostgreSQL runs on:
+
+Host: localhost
+
+Port: 5432
+
 
 
 
