@@ -5,6 +5,7 @@ from sqlalchemy import String, DateTime, CheckConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from sqlalchemy import String
 
 from app.db.base import Base
 
@@ -28,6 +29,11 @@ class User(Base):
         server_default=func.now(),
         nullable=False,
     )
+
+    password_hash: Mapped[str] = mapped_column(
+    String(255),
+    nullable=False,
+)
 
     __table_args__ = (
         CheckConstraint(

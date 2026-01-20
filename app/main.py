@@ -6,8 +6,12 @@ from app.db.deps import get_db
 
 from app.db.check import check_db_connection
 from app.api.v1.api import api_router
+from app.api.auth import router as auth_router
+
 
 app = FastAPI(title="Cleanup Crew")
+
+app.include_router(auth_router)
 
 @app.on_event("startup")
 def startup_event():
