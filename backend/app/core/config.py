@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
- 
+
 class Settings(BaseSettings):
   ENV: str = "dev"
   POSTGRES_DB: str
@@ -8,6 +8,7 @@ class Settings(BaseSettings):
   POSTGRES_PORT: str
 
   DATABASE_URL: str
+  SECRET_KEY: str
 
   class Config:
     env_file = ".env"

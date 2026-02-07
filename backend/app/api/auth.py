@@ -3,13 +3,14 @@ from sqlalchemy.orm import Session
 
 from app.db.deps import get_db
 from app.models.user import User
-from app.schemas.user import UserCreate, UserLogin
+from app.schemas.user import UserCreate, UserLogin, UserResponse
 from app.schemas.token import Token
 from app.core.security import (
     hash_password,
     verify_password,
     create_access_token,
 )
+from app.core.deps import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -42,4 +43,18 @@ def login(payload: UserLogin, db: Session = Depends(get_db)):
         role=user.role,
     )
 
-    return {"access_token": token}
+    return {"access_token": token, "token_type": "bearer"}
+
+
+@router.get("/me", response_model=UserResponse)
+def get_current_user_info(
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    user = db.query(User).filter(User.id == current_user["sub"]).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+    return user
