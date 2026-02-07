@@ -82,3 +82,6 @@ dmypy.json
 # OS specific
 Thumbs.db
 .DS_Store
+
+# node modeules
+node_modules
