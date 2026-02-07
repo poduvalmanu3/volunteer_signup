@@ -46,7 +46,7 @@ def login(payload: UserLogin, db: Session = Depends(get_db)):
     return {"access_token": token, "token_type": "bearer"}
 
 
-@router.get("/me", response_model=UserResponse)
+@router.get("/profile", response_model=UserResponse)
 def get_current_user_info(
     current_user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
