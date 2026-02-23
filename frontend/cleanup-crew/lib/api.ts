@@ -33,7 +33,7 @@ export async function apiFetch(
     });
 
     if (!res.ok) {
-        if (res.status === 401) {
+        if (res.status === 401 && token) {
             removeToken();
             if (typeof window !== "undefined") {
                 window.location.href = "/login";

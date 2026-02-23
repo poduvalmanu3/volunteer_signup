@@ -85,3 +85,7 @@ Thumbs.db
 
 # node modeules
 node_modules
+
+# Allow frontend lib directory (overrides Python lib/ rule above)
+!frontend/**/lib/
+!frontend/**/lib/**
