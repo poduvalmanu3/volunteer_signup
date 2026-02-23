@@ -2,42 +2,41 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { api, setToken } from "@/lib/api";
-import styles from "./page.module.css";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { api } from "@/lib/api";
+import { useAuth } from "@/lib/AuthContext";
+import styles from "../auth.module.css";
+
+interface LoginFields {
+  email: string;
+  password: string;
+}
 
 export default function LoginPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { login } = useAuth();
+  const [serverError, setServerError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFields>();
+
+  const onSubmit = async (data: LoginFields) => {
+    setServerError(null);
 
     try {
-      const response = await api.post("/auth/login", formData);
+      const response = await api.post("/auth/login", data);
 
       if (response.access_token) {
-        setToken(response.access_token);
+        login(response.access_token);
         router.push("/");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
-    } finally {
-      setLoading(false);
+      setServerError(err instanceof Error ? err.message : "Login failed");
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
   };
 
   return (
@@ -48,21 +47,21 @@ export default function LoginPage() {
           <p className={styles.subtitle}>Log in to Cleanup Crew</p>
         </div>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
           <div className={styles.formGroup}>
             <label htmlFor="email" className={styles.label}>
               Email
             </label>
             <input
               id="email"
-              name="email"
               type="email"
-              required
-              value={formData.email}
-              onChange={handleChange}
               className={styles.input}
-              disabled={loading}
+              disabled={isSubmitting}
+              {...register("email", { required: "Email is required" })}
             />
+            {errors.email && (
+              <p className={styles.fieldError}>{errors.email.message}</p>
+            )}
           </div>
 
           <div className={styles.formGroup}>
@@ -71,37 +70,37 @@ export default function LoginPage() {
             </label>
             <input
               id="password"
-              name="password"
               type="password"
-              required
-              value={formData.password}
-              onChange={handleChange}
               className={styles.input}
-              disabled={loading}
+              disabled={isSubmitting}
+              {...register("password", { required: "Password is required" })}
             />
+            {errors.password && (
+              <p className={styles.fieldError}>{errors.password.message}</p>
+            )}
           </div>
 
-          {error && (
+          {serverError && (
             <div className={styles.errorBox}>
-              <p className={styles.errorText}>{error}</p>
+              <p className={styles.errorText}>{serverError}</p>
             </div>
           )}
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={isSubmitting}
             className={styles.submitButton}
           >
-            {loading ? "Logging in..." : "Log In"}
+            {isSubmitting ? "Logging in..." : "Log In"}
           </button>
         </form>
 
         <div className={styles.footer}>
           <p className={styles.footerText}>
-            Don't have an account?{" "}
-            <a href="/signup" className={styles.link}>
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className={styles.link}>
               Sign up
-            </a>
+            </Link>
           </p>
         </div>
       </div>

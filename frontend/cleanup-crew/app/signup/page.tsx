@@ -1,46 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
 import { api } from "@/lib/api";
-import styles from "./page.module.css";
+import styles from "../auth.module.css";
+import signupStyles from "./page.module.css";
+
+const MIN_PASSWORD_LENGTH = 8;
+
+interface SignupFields {
+  name: string;
+  email: string;
+  password: string;
+}
 
 export default function SignupPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignupFields>();
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+      }
+    };
+  }, []);
+
+  const onSubmit = async (data: SignupFields) => {
+    setServerError(null);
 
     try {
-      await api.post("/auth/signup", formData);
+      await api.post("/auth/signup", data);
       setSuccess(true);
 
-      // Redirect to login after 2 seconds
-      setTimeout(() => {
+      redirectTimerRef.current = setTimeout(() => {
         router.push("/login");
       }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Signup failed");
-    } finally {
-      setLoading(false);
+      setServerError(err instanceof Error ? err.message : "Signup failed");
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
   };
 
   return (
@@ -51,21 +59,21 @@ export default function SignupPage() {
           <p className={styles.subtitle}>Sign up for Cleanup Crew</p>
         </div>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
           <div className={styles.formGroup}>
             <label htmlFor="name" className={styles.label}>
               Name
             </label>
             <input
               id="name"
-              name="name"
               type="text"
-              required
-              value={formData.name}
-              onChange={handleChange}
               className={styles.input}
-              disabled={loading}
+              disabled={isSubmitting}
+              {...register("name", { required: "Name is required" })}
             />
+            {errors.name && (
+              <p className={styles.fieldError}>{errors.name.message}</p>
+            )}
           </div>
 
           <div className={styles.formGroup}>
@@ -74,14 +82,14 @@ export default function SignupPage() {
             </label>
             <input
               id="email"
-              name="email"
               type="email"
-              required
-              value={formData.email}
-              onChange={handleChange}
               className={styles.input}
-              disabled={loading}
+              disabled={isSubmitting}
+              {...register("email", { required: "Email is required" })}
             />
+            {errors.email && (
+              <p className={styles.fieldError}>{errors.email.message}</p>
+            )}
           </div>
 
           <div className={styles.formGroup}>
@@ -90,25 +98,35 @@ export default function SignupPage() {
             </label>
             <input
               id="password"
-              name="password"
               type="password"
-              required
-              value={formData.password}
-              onChange={handleChange}
               className={styles.input}
-              disabled={loading}
+              disabled={isSubmitting}
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: MIN_PASSWORD_LENGTH,
+                  message: `Minimum ${MIN_PASSWORD_LENGTH} characters`,
+                },
+              })}
             />
+            {errors.password ? (
+              <p className={styles.fieldError}>{errors.password.message}</p>
+            ) : (
+              <p className={signupStyles.hint}>
+                Minimum {MIN_PASSWORD_LENGTH} characters
+              </p>
+            )}
           </div>
 
-          {error && (
+          {serverError && (
             <div className={styles.errorBox}>
-              <p className={styles.errorText}>{error}</p>
+              <p className={styles.errorText}>{serverError}</p>
             </div>
           )}
 
           {success && (
-            <div className={styles.successBox}>
-              <p className={styles.successText}>
+            <div className={signupStyles.successBox}>
+              <p className={signupStyles.successText}>
                 Account created successfully! Redirecting to login...
               </p>
             </div>
@@ -116,19 +134,19 @@ export default function SignupPage() {
 
           <button
             type="submit"
-            disabled={loading || success}
+            disabled={isSubmitting || success}
             className={styles.submitButton}
           >
-            {loading ? "Creating account..." : "Sign Up"}
+            {isSubmitting ? "Creating account..." : "Sign Up"}
           </button>
         </form>
 
         <div className={styles.footer}>
           <p className={styles.footerText}>
             Already have an account?{" "}
-            <a href="/login" className={styles.link}>
+            <Link href="/login" className={styles.link}>
               Log in
-            </a>
+            </Link>
           </p>
         </div>
       </div>

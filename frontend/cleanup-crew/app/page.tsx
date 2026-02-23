@@ -1,13 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
+import { useAuth } from "@/lib/AuthContext";
 import styles from "./page.module.css";
 
 export default function Home() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const [healthStatus, setHealthStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace("/login");
+    }
+  }, [isAuthenticated, router]);
 
   const testHealthEndpoint = async () => {
     setLoading(true);

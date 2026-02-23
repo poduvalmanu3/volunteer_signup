@@ -63,13 +63,18 @@
 
 .input:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #1F7A63;
+  box-shadow: 0 0 0 3px rgba(31, 122, 99, 0.15);
 }
 
 .input:disabled {
   background-color: #f4f4f5;
   cursor: not-allowed;
+}
+
+.fieldError {
+  font-size: 0.75rem;
+  color: #b91c1c;
 }
 
 .errorBox {
@@ -87,7 +92,7 @@
 .submitButton {
   width: 100%;
   padding: 0.75rem;
-  background-color: #2563eb;
+  background-color: #1F7A63;
   color: white;
   font-weight: 500;
   border: none;
@@ -98,11 +103,11 @@
 }
 
 .submitButton:hover {
-  background-color: #1d4ed8;
+  background-color: #186554;
 }
 
 .submitButton:disabled {
-  background-color: #93c5fd;
+  background-color: #7CBDB2;
   cursor: not-allowed;
 }
 
@@ -117,7 +122,7 @@
 }
 
 .link {
-  color: #2563eb;
+  color: #1F7A63;
   font-weight: 500;
   text-decoration: none;
 }
@@ -154,7 +159,7 @@
   }
 
   .input:focus {
-    border-color: #3b82f6;
+    border-color: #1F7A63;
   }
 
   .input:disabled {
