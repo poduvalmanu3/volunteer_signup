@@ -33,6 +33,12 @@ export async function apiFetch(
     });
 
     if (!res.ok) {
+        if (res.status === 401) {
+            removeToken();
+            if (typeof window !== "undefined") {
+                window.location.href = "/login";
+            }
+        }
         const error = await res.json().catch(() => null);
         throw new Error(error?.detail || "API request failed");
     }

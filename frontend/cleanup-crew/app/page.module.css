@@ -20,6 +20,30 @@
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
+.topBar {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 1rem;
+}
+
+.logoutButton {
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: #1F7A63;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: 1px solid #1F7A63;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.logoutButton:hover {
+  background-color: #1F7A63;
+  color: white;
+}
+
 .header {
   text-align: center;
 }
