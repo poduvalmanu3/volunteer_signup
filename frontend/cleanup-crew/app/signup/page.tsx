@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { api } from "@/lib/api";
+import { useAuth } from "@/lib/AuthContext";
 import styles from "../auth.module.css";
 import signupStyles from "./page.module.css";
 
@@ -18,6 +19,7 @@ interface SignupFields {
 
 export default function SignupPage() {
   const router = useRouter();
+  const { isAuthenticated, isLoading } = useAuth();
   const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -27,6 +29,12 @@ export default function SignupPage() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SignupFields>();
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace("/");
+    }
+  }, [isAuthenticated, isLoading, router]);
 
   useEffect(() => {
     return () => {
