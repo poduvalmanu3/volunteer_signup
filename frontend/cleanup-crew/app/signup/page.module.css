@@ -1,0 +1,27 @@
+.hint {
+  font-size: 0.75rem;
+  color: #71717a;
+}
+
+.successBox {
+  padding: 0.75rem;
+  background-color: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 0.375rem;
+}
+
+.successText {
+  font-size: 0.875rem;
+  color: #15803d;
+}
+
+@media (prefers-color-scheme: dark) {
+  .successBox {
+    background-color: #14532d;
+    border-color: #15803d;
+  }
+
+  .successText {
+    color: #86efac;
+  }
+}

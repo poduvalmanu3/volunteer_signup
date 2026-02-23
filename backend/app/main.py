@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -8,9 +9,19 @@ from app.db.check import check_db_connection
 from app.api.v1.api import api_router
 from app.api.auth import router as auth_router
 from app.api.admin import router as admin_router
+from app.core.config import settings
 
 
 app = FastAPI(title="Cleanup Crew")
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ALLOWED_ORIGINS.split(","),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(auth_router)
 app.include_router(admin_router)
