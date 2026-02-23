@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cleanup Crew — Frontend
 
-## Getting Started
+Next.js web app for the Cleanup Crew platform.
 
-First, run the development server:
+## Tech Stack
+
+- Next.js 16 (App Router)
+- React 19
+- TypeScript
+- CSS Modules
+- react-hook-form
+
+## Setup
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Configure environment variables
+
+Create `.env.local`:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+```
+
+### 3. Run the dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App available at: `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Pages
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Route     | Access    | Description       |
+|-----------|-----------|-------------------|
+| `/`       | Protected | Home dashboard    |
+| `/login`  | Guest     | Login form        |
+| `/signup` | Guest     | Registration form |
 
-## Learn More
+## Auth
 
-To learn more about Next.js, take a look at the following resources:
+- JWT stored in `localStorage` after login
+- `AuthContext` exposes `isAuthenticated`, `isLoading`, `login()`, `logout()`
+- `ProtectedRoute` wraps pages that require authentication
+- `isLoading` prevents redirect flash on page refresh
+- 401 API responses auto-clear the token and redirect to `/login`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+app/
+├── layout.tsx          # Root layout with AuthProvider
+├── page.tsx            # Protected home page
+├── auth.module.css     # Shared auth page styles
+├── login/
+│   └── page.tsx        # Login form
+└── signup/
+    └── page.tsx        # Signup form
+lib/
+├── api.ts              # Fetch wrapper with JWT injection and 401 handling
+├── AuthContext.tsx     # Global auth state
+└── ProtectedRoute.tsx  # Route guard component
+```
